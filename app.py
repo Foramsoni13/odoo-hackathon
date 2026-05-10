@@ -14,9 +14,17 @@ db = SQLAlchemy(app)
 # MODEL
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
+    firstname = db.Column(db.String(50))
+    lastname = db.Column(db.String(50))
     email = db.Column(db.String(120), unique=True)
+    phone = db.Column(db.String(20))
     password = db.Column(db.LargeBinary)
+    city = db.Column(db.String(50))
+    country = db.Column(db.String(50))
+
+    @property
+    def name(self):
+        return f"{self.firstname} {self.lastname}"
 
 class Destination(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -83,8 +91,8 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
-        # LOGIN
-        if action == "login":
+        # LOGIN (Default behavior if no action specified or if action is 'login')
+        if not action or action == "login":
             password = request.form.get("password")
 
             if not user:
@@ -93,25 +101,29 @@ def login():
             if not bcrypt.checkpw(password.encode('utf-8'), user.password):
                 return render_template("login.html", error="Wrong password")
 
-            session["user"] = user.name
+            session["user_email"] = user.email
+            session["user"] = user.firstname # For display
             return redirect("/home")
 
-        # FORGOT PASSWORD
-        if action == "forgot":
-
-            if not user:
-                return render_template("login.html", error="Email not registered")
-
-            otp = str(random.randint(100000, 999999))
-
-            session["otp"] = otp
-            session["reset_email"] = email
-
-            print("OTP:", otp)
-
-            return redirect("/verify-otp")
-
     return render_template("login.html")
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            return render_template("forgot_password.html", error="Email not registered")
+
+        otp = str(random.randint(100000, 999999))
+        session["otp"] = otp
+        session["reset_email"] = email
+        print("OTP:", otp)
+
+        return redirect("/verify-otp")
+
+    return render_template("forgot_password.html")
 
 
 # ---------------- VERIFY OTP ----------------
@@ -163,10 +175,14 @@ def reset_password():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        name = request.form.get("name") or request.form.get("firstname")
+        firstname = request.form.get("firstname")
+        lastname = request.form.get("lastname")
         email = request.form.get("email")
+        phone = request.form.get("phone")
         password = request.form.get("password")
         confirm = request.form.get("confirm")
+        city = request.form.get("city")
+        country = request.form.get("country")
 
         if password != confirm:
             return "Passwords do not match"
@@ -176,13 +192,19 @@ def register():
 
         hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-        db.session.add(User(name=name, email=email, password=hashed_pw))
+        new_user = User(
+            firstname=firstname,
+            lastname=lastname,
+            email=email,
+            phone=phone,
+            password=hashed_pw,
+            city=city,
+            country=country
+        )
+        db.session.add(new_user)
         db.session.commit()
         
-        # Log the user in after registration
-        session["user"] = name
-
-        return redirect("/home")
+        return redirect("/login")
 
     return render_template("register.html")
 
@@ -190,8 +212,8 @@ def register():
 # ---------------- HOME ----------------
 @app.route("/home")
 def home():
-    if session.get("user"):
-        user = User.query.filter_by(name=session["user"]).first()
+    if session.get("user_email"):
+        user = User.query.filter_by(email=session["user_email"]).first()
         if not user:
             return redirect("/login")
         
@@ -206,10 +228,10 @@ def home():
 import datetime
 @app.route("/plan-trip", methods=["GET", "POST"])
 def plan_trip():
-    if not session.get("user"):
+    if not session.get("user_email"):
         return redirect("/login")
 
-    user = User.query.filter_by(name=session["user"]).first()
+    user = User.query.filter_by(email=session["user_email"]).first()
     if not user:
         return redirect("/login")
 
@@ -257,8 +279,8 @@ def plan_trip():
 # ---------------- MY TRIPS ----------------
 @app.route("/my-trips")
 def my_trips():
-    if session.get("user"):
-        user = User.query.filter_by(name=session["user"]).first()
+    if session.get("user_email"):
+        user = User.query.filter_by(email=session["user_email"]).first()
         if not user:
             return redirect("/login")
         trips = Trip.query.filter_by(user_id=user.id).all()
@@ -268,8 +290,8 @@ def my_trips():
 # ---------------- DELETE TRIP ----------------
 @app.route("/delete-trip/<int:trip_id>", methods=["POST"])
 def delete_trip(trip_id):
-    if session.get("user"):
-        user = User.query.filter_by(name=session["user"]).first()
+    if session.get("user_email"):
+        user = User.query.filter_by(email=session["user_email"]).first()
         if user:
             trip = Trip.query.filter_by(id=trip_id, user_id=user.id).first()
             if trip:
@@ -287,8 +309,8 @@ def view_trip(trip_id):
         
     is_owner = False
     current_user = None
-    if session.get("user"):
-        current_user = User.query.filter_by(name=session["user"]).first()
+    if session.get("user_email"):
+        current_user = User.query.filter_by(email=session["user_email"]).first()
         if current_user and trip.user_id == current_user.id:
             is_owner = True
             
@@ -300,8 +322,8 @@ def view_trip(trip_id):
 # ---------------- ITINERARY BUILDER ----------------
 @app.route("/itinerary-builder/<int:trip_id>")
 def itinerary_builder(trip_id):
-    if session.get("user"):
-        user = User.query.filter_by(name=session["user"]).first()
+    if session.get("user_email"):
+        user = User.query.filter_by(email=session["user_email"]).first()
         if not user:
             return redirect("/login")
         trip = Trip.query.filter_by(id=trip_id, user_id=user.id).first()
@@ -312,8 +334,8 @@ def itinerary_builder(trip_id):
 
 @app.route("/add-stop/<int:trip_id>", methods=["POST"])
 def add_stop(trip_id):
-    if session.get("user"):
-        user = User.query.filter_by(name=session["user"]).first()
+    if session.get("user_email"):
+        user = User.query.filter_by(email=session["user_email"]).first()
         trip = Trip.query.filter_by(id=trip_id, user_id=user.id).first()
         if trip:
             city_name = request.form.get("city_name")
@@ -336,8 +358,8 @@ def add_stop(trip_id):
 
 @app.route("/add-activity/<int:stop_id>", methods=["POST"])
 def add_activity(stop_id):
-    if session.get("user"):
-        user = User.query.filter_by(name=session["user"]).first()
+    if session.get("user_email"):
+        user = User.query.filter_by(email=session["user_email"]).first()
         stop = Stop.query.get(stop_id)
         if stop and stop.trip.user_id == user.id:
             name = request.form.get("name")
@@ -352,7 +374,7 @@ def add_activity(stop_id):
 # ---------------- SEARCH ----------------
 @app.route("/search")
 def search():
-    if not session.get("user"):
+    if not session.get("user_email"):
         return redirect("/login")
 
     query = request.args.get("q", "").strip()
@@ -401,7 +423,7 @@ def search():
 # ---------------- COMMUNITY ----------------
 @app.route("/community")
 def community():
-    if not session.get("user"):
+    if not session.get("user_email"):
         return redirect("/login")
         
     # Get all trips (in a real app this would filter for is_public=True)
@@ -422,10 +444,10 @@ def community():
 # ---------------- PROFILE ----------------
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
-    if not session.get("user"):
+    if not session.get("user_email"):
         return redirect("/login")
 
-    user = User.query.filter_by(name=session["user"]).first()
+    user = User.query.filter_by(email=session["user_email"]).first()
     if not user:
         return redirect("/login")
 
@@ -446,6 +468,12 @@ def profile():
 
     return render_template("profile.html", user=session["user"], user_obj=user,
                            preplanned_trips=preplanned_trips, previous_trips=previous_trips)
+
+# ---------------- USERS (ADMIN VIEW) ----------------
+@app.route("/users")
+def users_view():
+    all_users = User.query.all()
+    return render_template("users.html", users=all_users)
 
 # ---------------- LOGOUT ----------------
 @app.route("/logout")
