@@ -3,13 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 import random
 
-app = Flask(__name__)
-app.secret_key = "hackathon_secret_key_123"
 
-# DATABASE
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://hack_user:hack123@localhost/hackathon_db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
 # MODEL
 class User(db.Model):
