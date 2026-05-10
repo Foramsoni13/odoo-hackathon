@@ -153,6 +153,7 @@ def reset_password():
 
         session.clear()
 
+        # Redirect to home after reset, logging them in could also be done here but for now just redirect to login so they can log in with new password
         return redirect("/login")
 
     return render_template("reset_password.html")
@@ -177,8 +178,11 @@ def register():
 
         db.session.add(User(name=name, email=email, password=hashed_pw))
         db.session.commit()
+        
+        # Log the user in after registration
+        session["user"] = name
 
-        return redirect("/login")
+        return redirect("/home")
 
     return render_template("register.html")
 
