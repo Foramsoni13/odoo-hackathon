@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Glass Registration Screen</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background Slider */
+        .bg-slider {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .bg-slider img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            animation: slideShow 15s infinite;
+        }
+
+        .bg-slider img:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .bg-slider img:nth-child(2) {
+            animation-delay: 5s;
+        }
+
+        .bg-slider img:nth-child(3) {
+            animation-delay: 10s;
+        }
+
+        @keyframes slideShow {
+            0% {
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            40% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: -1;
+        }
+
+        /* Main Box */
+        .main-box {
+            width: 350px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .photo-box {
+            width: 55px;
+            height: 55px;
+            border: 2px solid white;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            overflow: hidden;
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .row {
+            display: flex;
+            gap: 7px;
+            margin-bottom: 8px;
+        }
+
+        .input-box {
+            width: 100%;
+            position: relative;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.20);
+            border: 1px solid rgba(255, 255, 255, 0.30);
+            border-radius: 9px;
+            padding: 8px 34px 8px 10px;
+            color: white;
+            font-size: 12px;
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #f1f1f1;
+        }
+
+        textarea {
+            height: 55px;
+            resize: none;
+            padding-right: 10px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+        }
+
+        button {
+            width: 100%;
+            background: #875A7B;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 12px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 11px;
+            color: white;
+        }
+
+        .login-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #ffd6d6;
+            font-size: 9px;
+            margin-top: 2px;
+            min-height: 11px;
+        }
+
+        .flash-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            color: white;
+            font-size: 13px;
+            z-index: 9999;
+            animation: fadeOut 4s forwards;
+        }
+
+        .success {
+            background: green;
+        }
+
+        .error-msg {
+            background: red;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @media(max-width:450px) {
+            .main-box {
+                width: 100%;
+            }
+
+            .row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Slider -->
+    <div class="bg-slider">
+        <img src="{{ url_for('static', filename='images/travel1.jpg') }}">
+        <img src="{{ url_for('static', filename='images/travel2.jpg') }}">
+        <img src="{{ url_for('static', filename='images/travel3.jpg') }}">
+    </div>
+    <div class="overlay"></div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="flash-message {% if category == 'success' %}success{% else %}error-msg{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="main-box">
+        <div class="photo-box">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}">
+        </div>
+
+        <form id="registerForm" method="POST" action="/register">
+            <div class="form-container">
+                <div class="row">
+                    <div class="input-box">
+                        <input type="text" id="fname" name="firstname" placeholder="First Name">
+                        <div class="error" id="fnameError"></div>
+                    </div>
+                    <div class="input-box">
+                        <input type="text" id="lname" name="lastname" placeholder="Last Name">
+                        <div class="error" id="lnameError"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-box">
+                        <input type="email" id="email" name="email" placeholder="Email">
+                        <div class="error" id="emailError"></div>
+                    </div>
+                    <div class="input-box">
+                        <input type="text" id="phone" name="phone" placeholder="Phone">
+                        <div class="error" id="phoneError"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-box">
+                        <input type="password" id="password" name="password" placeholder="Password">
+                        <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
+                        <div class="error" id="passwordError"></div>
+                    </div>
+                    <div class="input-box">
+                        <input type="password" id="confirmPassword" name="confirm" placeholder="Confirm Password">
+                        <i class="fa-solid fa-eye toggle-password"
+                            onclick="togglePassword('confirmPassword', this)"></i>
+                        <div class="error" id="confirmPasswordError"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-box">
+                        <input type="text" id="city" name="city" placeholder="City">
+                        <div class="error" id="cityError"></div>
+                    </div>
+                    <div class="input-box">
+                        <input type="text" id="country" name="country" placeholder="Country">
+                        <div class="error" id="countryError"></div>
+                    </div>
+                </div>
+
+                <textarea name="info" id="info" placeholder="Additional Information"></textarea>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="/login">Login</a>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(id, element) {
+            let input = document.getElementById(id);
+            if (input.type === "password") {
+                input.type = "text";
+                element.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                input.type = "password";
+                element.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+
+        document.getElementById("registerForm").addEventListener("submit", function (e) {
+            let valid = true;
+            document.querySelectorAll(".error").forEach(el => el.innerHTML = "");
+
+            const fname = document.getElementById("fname").value.trim();
+            const lname = document.getElementById("lname").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const password = document.getElementById("password").value;
+            const confirm = document.getElementById("confirmPassword").value;
+            const city = document.getElementById("city").value.trim();
+            const country = document.getElementById("country").value.trim();
+
+            if (!fname) { document.getElementById("fnameError").innerText = "Enter First Name"; valid = false; }
+            if (!lname) { document.getElementById("lnameError").innerText = "Enter Last Name"; valid = false; }
+            if (!email.includes("@")) { document.getElementById("emailError").innerText = "Invalid Email"; valid = false; }
+            if (phone.length !== 10 || isNaN(phone)) { document.getElementById("phoneError").innerText = "Enter 10 Digits"; valid = false; }
+            if (password.length < 6) { document.getElementById("passwordError").innerText = "Min 6 characters"; valid = false; }
+            if (password !== confirm) { document.getElementById("confirmPasswordError").innerText = "No match"; valid = false; }
+            if (!city) { document.getElementById("cityError").innerText = "Enter City"; valid = false; }
+            if (!country) { document.getElementById("countryError").innerText = "Enter Country"; valid = false; }
+
+            if (!valid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+
+</html>

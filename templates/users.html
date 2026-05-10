@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users Page</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial;
+        }
+
+        body{
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:#111;
+            color:white;
+            padding:20px;
+        }
+
+        .container{
+            width:95%;
+            max-width:1000px;
+            background:rgba(255,255,255,0.10);
+            border:1px solid rgba(255,255,255,0.2);
+            border-radius:15px;
+            backdrop-filter:blur(15px);
+            padding:20px;
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:15px;
+        }
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:15px;
+        }
+
+        a{
+            color:#00ffcc;
+            text-decoration:none;
+            font-weight:bold;
+        }
+
+        a:hover{
+            text-decoration:underline;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            border-radius:10px;
+            overflow:hidden;
+        }
+
+        th, td{
+            padding:12px;
+            text-align:center;
+            border-bottom:1px solid rgba(255,255,255,0.2);
+        }
+
+        th{
+            background:#875A7B;
+        }
+
+        tr:hover{
+            background:rgba(255,255,255,0.08);
+        }
+
+        .btn{
+            padding:8px 12px;
+            background:#875A7B;
+            border:none;
+            color:white;
+            border-radius:8px;
+            cursor:pointer;
+            text-decoration:none;
+        }
+
+        .btn:hover{
+            background:#6a4461;
+        }
+
+        .hash{
+            font-size:12px;
+            color:#ccc;
+            word-break:break-all;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <a href="/home">⬅ Home</a>
+        <a class="btn" href="/logout">Logout</a>
+    </div>
+
+    <h2>Registered Users</h2>
+
+    <!-- TABLE -->
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>Password (Hash)</th>
+        </tr>
+
+        {% for u in users %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.firstname }} {{ u.lastname }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.phone }}</td>
+            <td>{{ u.city }}</td>
+            <td>{{ u.country }}</td>
+
+            <!-- HASH PASSWORD -->
+            <td class="hash">{{ u.password }}</td>
+
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+</body>
+</html>

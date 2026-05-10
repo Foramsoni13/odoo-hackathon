@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TraveLoop — Create a new Trip</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080812;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.1);--text:#f8fafc;--muted:#94a3b8;--accent1:#38bdf8;--accent2:#8b5cf6;--accent3:#f472b6;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background-color:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right,rgba(56,189,248,0.1),transparent 40%),radial-gradient(circle at bottom left,rgba(139,92,246,0.15),transparent 50%);z-index:-1;pointer-events:none;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:rgba(0,0,0,0.4);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
+.nav-logo{font-size:24px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo span{color:var(--accent1);}
+/* NAV LINKS */
+.nav-links{display:flex;align-items:center;gap:30px;}
+.nav-link{color:var(--muted);text-decoration:none;font-weight:500;font-size:15px;transition:.2s;}
+.nav-link:hover, .nav-link.active{color:#fff;}
+.nav-right{display:flex;align-items:center;gap:20px;}
+.avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--accent1),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;cursor:pointer;}
+.logout-btn{padding:8px 18px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;text-decoration:none;}
+
+/* PAGE LAYOUT */
+.page{max-width:900px;margin:0 auto;padding:60px 40px;}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);backdrop-filter:blur(16px);margin-bottom:60px;}
+.page-title{font-size:32px;font-weight:800;margin-bottom:10px;background:linear-gradient(90deg,#38bdf8,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-sub{color:var(--muted);font-size:15px;margin-bottom:30px;}
+
+/* FORM */
+.form-group{margin-bottom:24px; display:flex; align-items:center;}
+.form-group label{width:200px; font-size:15px;font-weight:600;color:rgba(255,255,255,0.9); flex-shrink:0;}
+.form-control{flex:1; background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:.2s;}
+.form-control:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(139,92,246,0.2);}
+textarea.form-control{resize:vertical; min-height:100px;}
+.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;border-radius:14px;color:#fff;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-top:20px;transition:.3s;box-shadow:0 10px 25px rgba(139,92,246,0.3);}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 15px 35px rgba(139,92,246,0.4);}
+
+/* SUGGESTIONS SECTION */
+.sugg-header{font-size:24px;font-weight:700;color:#fff;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.sugg-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:24px;}
+.sugg-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;position:relative;transition:.3s;cursor:pointer;aspect-ratio:3/4;}
+.sugg-card:hover{transform:translateY(-5px);border-color:var(--accent1);box-shadow:0 15px 30px rgba(56,189,248,0.2);}
+.sugg-img{width:100%;height:100%;object-fit:cover;}
+.sugg-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,rgba(0,0,0,0) 60%);}
+.sugg-info{position:absolute;bottom:0;left:0;width:100%;padding:20px;}
+.sugg-city{font-size:20px;font-weight:700;color:#fff;}
+.sugg-country{font-size:14px;color:var(--muted);margin-bottom:8px;}
+.sugg-tag{background:var(--accent2);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase;display:inline-block;}
+
+.fill-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.3);color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;opacity:0;transition:.3s;z-index:10;}
+.sugg-card:hover .fill-btn{opacity:1;}
+.fill-btn:hover{background:var(--accent1);border-color:var(--accent1);}
+</style>
+</head>
+<body>
+<nav>
+  <div style="display:flex; align-items:center; gap: 40px;">
+    <a href="/home" class="nav-logo"><span>✈️</span> TraveLoop</a>
+    <div class="nav-links">
+      <a href="/home" class="nav-link">Dashboard</a>
+      <a href="/my-trips" class="nav-link">My Trips</a>
+      <a href="/plan-trip" class="nav-link active">Plan a Trip</a>
+      <a href="/search" class="nav-link">Search</a>
+      <a href="/community" class="nav-link">Community</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a href="/profile" class="avatar" style="text-decoration:none;color:#fff;">{{ user[0]|upper if user else 'U' }}</a>
+    <span style="font-size:16px; font-weight: 600; color: #fff; background: linear-gradient(90deg, #c4b5fd, #f9a8d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user }}</span>
+    <a href="/logout" class="logout-btn">Sign out</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="form-card">
+    <h1 class="page-title">Plan a new trip</h1>
+    <p class="page-sub">Fill in the details below to start crafting your next perfect itinerary.</p>
+    
+    <form action="/plan-trip" method="POST">
+      <div class="form-group">
+        <label>Trip Name:</label>
+        <input type="text" class="form-control" name="trip_name" placeholder="E.g., Summer Getaway" required>
+      </div>
+      <div class="form-group">
+        <label>Select a Place:</label>
+        <input type="text" class="form-control" name="destination" id="destInput" placeholder="Where are you going?" required>
+      </div>
+      <div class="form-group">
+        <label>Start Date:</label>
+        <input type="date" class="form-control" name="start_date" required>
+      </div>
+      <div class="form-group">
+        <label>End Date:</label>
+        <input type="date" class="form-control" name="end_date" required>
+      </div>
+      <div class="form-group">
+        <label>Trip Description:</label>
+        <textarea class="form-control" name="description" placeholder="A brief overview of your trip..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Cover Photo (URL):</label>
+        <input type="url" class="form-control" name="cover_photo" id="imgInput" placeholder="Optional image link...">
+      </div>
+      
+      <button type="submit" class="btn-submit">Create Trip Itinerary ✨</button>
+    </form>
+  </div>
+
+  <div class="sugg-header">Suggestion for Places to Visit / Activities to perform</div>
+  <div class="sugg-grid">
+    {% for dest in destinations %}
+    <div class="sugg-card" onclick="fillForm('{{ dest.name }}', '{{ dest.country }}', '{{ dest.image_url }}')">
+      <div class="fill-btn" title="Use this destination">➕</div>
+      <img src="{{ dest.image_url }}" alt="{{ dest.name }}" class="sugg-img">
+      <div class="sugg-overlay"></div>
+      <div class="sugg-info">
+        <div class="sugg-city">{{ dest.name }}</div>
+        <div class="sugg-country">{{ dest.country }}</div>
+        <span class="sugg-tag">{{ dest.category.title() }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  function fillForm(city, country, imgUrl) {
+    document.getElementById('destInput').value = city + ', ' + country;
+    document.getElementById('imgInput').value = imgUrl;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

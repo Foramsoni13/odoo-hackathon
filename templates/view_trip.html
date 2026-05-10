@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ trip.name }} — TraveLoop</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080812;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.1);--text:#f8fafc;--muted:#94a3b8;--accent1:#38bdf8;--accent2:#8b5cf6;--accent3:#f472b6;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background-color:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right,rgba(56,189,248,0.1),transparent 40%),radial-gradient(circle at bottom left,rgba(139,92,246,0.15),transparent 50%);z-index:-1;pointer-events:none;}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:rgba(0,0,0,0.4);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
+.nav-logo{font-size:24px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo span{color:var(--accent1);}
+.nav-links{display:flex;align-items:center;gap:30px;}
+.nav-link{color:var(--muted);text-decoration:none;font-weight:500;font-size:15px;transition:.2s;}
+.nav-link:hover,.nav-link.active{color:#fff;}
+.nav-right{display:flex;align-items:center;gap:20px;}
+.avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--accent1),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;color:#fff;}
+.logout-btn{padding:8px 18px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;text-decoration:none;}
+
+.hero{height:380px;position:relative;display:flex;align-items:flex-end;padding:40px;overflow:hidden;border-bottom:1px solid var(--border);}
+.hero-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:0.5;}
+.hero-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(to top,var(--bg) 0%,rgba(8,8,18,0.2) 100%);z-index:-1;}
+.hero-content{max-width:1000px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:flex-end;}
+.trip-creator{display:flex;align-items:center;gap:10px;margin-bottom:16px;background:rgba(0,0,0,0.4);padding:6px 16px;border-radius:99px;width:fit-content;border:1px solid rgba(255,255,255,0.1);}
+.trip-title{font-size:48px;font-weight:800;color:#fff;margin-bottom:10px;line-height:1.1;}
+.trip-meta{font-size:16px;color:rgba(255,255,255,0.8);display:flex;align-items:center;gap:16px;}
+.action-buttons{display:flex;align-items:center;gap:12px;}
+.btn-share{background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:12px 20px;border-radius:12px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:8px;}
+.btn-share:hover{background:rgba(255,255,255,0.2);}
+.btn-copy{background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;color:#fff;padding:12px 20px;border-radius:12px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:8px;box-shadow:0 10px 20px rgba(139,92,246,0.3);}
+.btn-copy:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(139,92,246,0.4);}
+
+.page{max-width:1000px;margin:0 auto;padding:40px;}
+
+/* BUDGET SECTION */
+.budget-section{margin-bottom:50px;}
+.budget-header{font-size:24px;font-weight:700;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;}
+.budget-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;}
+.budget-card h3{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;}
+
+.budget-bar-wrap{margin-bottom:12px;}
+.budget-bar-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;}
+.budget-bar-label span:first-child{color:var(--muted);}
+.budget-bar-label span:last-child{color:#fff;font-weight:600;}
+.budget-bar{height:8px;background:rgba(255,255,255,0.05);border-radius:99px;overflow:hidden;}
+.budget-bar-fill{height:100%;border-radius:99px;transition:.5s;}
+
+.stat-row{display:flex;gap:16px;margin-bottom:24px;}
+.stat-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;text-align:center;}
+.stat-val{font-size:28px;font-weight:800;margin-bottom:4px;}
+.stat-lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+
+/* EXPENSE TABLE */
+.expense-table{width:100%;border-collapse:separate;border-spacing:0 8px;}
+.expense-table th{text-align:left;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 16px;}
+.expense-table td{padding:14px 16px;background:rgba(0,0,0,0.2);font-size:14px;}
+.expense-table tr td:first-child{border-radius:12px 0 0 12px;}
+.expense-table tr td:last-child{border-radius:0 12px 12px 0;text-align:right;font-weight:600;color:#34d399;}
+.expense-table .day-label{font-weight:700;color:var(--accent1);font-size:12px;}
+
+/* SOCIAL */
+.social-share{display:flex;gap:10px;margin-bottom:40px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.social-btn{width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;color:#fff;text-decoration:none;font-size:18px;}
+.social-btn:hover{background:var(--accent1);border-color:var(--accent1);transform:translateY(-2px);}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:40px;}
+.timeline::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:2px;background:var(--border);}
+.timeline-item{position:relative;margin-bottom:50px;}
+.timeline-dot{position:absolute;left:-45px;top:24px;width:20px;height:20px;background:var(--bg);border:4px solid var(--accent1);border-radius:50%;z-index:2;}
+.stop-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,0.2);}
+.stop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:16px;}
+.stop-city{font-size:26px;font-weight:800;color:#fff;}
+.stop-dates{font-size:14px;color:var(--muted);background:rgba(255,255,255,0.05);padding:6px 14px;border-radius:99px;font-weight:500;}
+.activities{display:flex;flex-direction:column;gap:12px;}
+.activity{display:flex;align-items:center;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.03);padding:16px 20px;border-radius:16px;}
+.act-time{width:100px;font-size:13px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;}
+.act-name{flex:1;font-size:16px;color:#fff;font-weight:500;}
+.act-cost{font-size:15px;color:#34d399;font-weight:600;}
+
+.empty-state{text-align:center;padding:60px 20px;background:var(--surface);border:1px dashed var(--border);border-radius:24px;}
+</style>
+</head>
+<body>
+<nav>
+  <div style="display:flex; align-items:center; gap:40px;">
+    <a href="/home" class="nav-logo"><span>✈️</span> TraveLoop</a>
+    {% if user %}
+    <div class="nav-links">
+      <a href="/home" class="nav-link">Dashboard</a>
+      <a href="/my-trips" class="nav-link">My Trips</a>
+      <a href="/plan-trip" class="nav-link">Plan a Trip</a>
+      <a href="/search" class="nav-link">Search</a>
+      <a href="/community" class="nav-link">Community</a>
+    </div>
+    {% endif %}
+  </div>
+  <div class="nav-right">
+    {% if user %}
+    <a href="/profile" class="avatar">{{ user[0]|upper }}</a>
+    <span style="font-size:16px; font-weight:600; color:#fff;">{{ user }}</span>
+    <a href="/logout" class="logout-btn">Sign out</a>
+    {% else %}
+    <a href="/login" style="color:#fff; text-decoration:none; font-weight:600;">Log In</a>
+    <a href="/register" class="btn-copy" style="padding:8px 16px; text-decoration:none;">Sign Up</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="hero">
+  <img src="{{ trip.image_url }}" alt="{{ trip.name }}" class="hero-bg">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div>
+      {% if is_owner %}
+      <a href="/my-trips" style="color:var(--muted); text-decoration:none; font-size:14px; margin-bottom:16px; display:inline-block;">&larr; Back to My Trips</a>
+      {% endif %}
+      <div class="trip-creator">
+        <div style="font-size:13px; font-weight:600; color:#fff;">Curated by {{ creator.name if creator else 'A TraveLoop User' }}</div>
+      </div>
+      <h1 class="trip-title">{{ trip.name }}</h1>
+      <div class="trip-meta">
+        <span>📅 {{ trip.date_range }}</span>
+        <span>👥 {{ trip.people_avatars.split(',')|length }} Travelers</span>
+        {% if trip.description %}<span>📝 {{ trip.description }}</span>{% endif %}
+      </div>
+    </div>
+    <div class="action-buttons">
+      <button class="btn-share" onclick="alert('Public link copied to clipboard!')">🔗 Share</button>
+      {% if not is_owner %}
+      <form action="/plan-trip" method="GET" style="margin:0;">
+        <button type="submit" class="btn-copy">📋 Copy Trip</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="social-share">
+    <a href="#" class="social-btn" onclick="alert('Shared to Twitter!')">𝕏</a>
+    <a href="#" class="social-btn" onclick="alert('Shared to Facebook!')">f</a>
+    <a href="#" class="social-btn" onclick="alert('Shared to WhatsApp!')">📱</a>
+  </div>
+
+  {% if trip.stops %}
+  <!-- BUDGET & COST BREAKDOWN -->
+  <div class="budget-section">
+    <div class="budget-header">💰 Trip Budget & Cost Breakdown</div>
+
+    {% set ns = namespace(total_cost=0) %}
+    {% for stop in trip.stops %}
+      {% for act in stop.activities %}
+        {% set ns.total_cost = ns.total_cost + act.cost %}
+      {% endfor %}
+    {% endfor %}
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-val" style="background:linear-gradient(90deg,#38bdf8,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">₹{{ "{:,}".format(trip.budget) }}</div>
+        <div class="stat-lbl">Total Budget</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:#34d399;">₹{{ "{:,}".format(ns.total_cost) }}</div>
+        <div class="stat-lbl">Estimated Spend</div>
+      </div>
+      <div class="stat-card">
+        {% if trip.budget > 0 %}
+        <div class="stat-val" style="color:{{ '#34d399' if trip.budget >= ns.total_cost else '#f87171' }};">₹{{ "{:,}".format(trip.budget - ns.total_cost) }}</div>
+        {% else %}
+        <div class="stat-val" style="color:var(--muted);">—</div>
+        {% endif %}
+        <div class="stat-lbl">Remaining</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:#fbbf24;">{{ trip.stops|length }}</div>
+        <div class="stat-lbl">Cities</div>
+      </div>
+    </div>
+
+    {% if trip.budget > 0 %}
+    <div class="budget-grid">
+      <!-- BUDGET BAR PER STOP -->
+      <div class="budget-card">
+        <h3>Spend by City</h3>
+        {% for stop in trip.stops %}
+        {% set stop_cost = stop.activities|map(attribute='cost')|sum %}
+        <div class="budget-bar-wrap">
+          <div class="budget-bar-label">
+            <span>📍 {{ stop.city_name }}</span>
+            <span>₹{{ "{:,}".format(stop_cost) }}</span>
+          </div>
+          <div class="budget-bar">
+            <div class="budget-bar-fill" style="width:{{ (stop_cost / ns.total_cost * 100) if ns.total_cost > 0 else 0 }}%; background:linear-gradient(90deg,#38bdf8,#8b5cf6);"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- OVERALL PROGRESS -->
+      <div class="budget-card">
+        <h3>Budget Usage</h3>
+        {% set pct = ((ns.total_cost / trip.budget) * 100) if trip.budget > 0 else 0 %}
+        <div style="text-align:center; margin-bottom:20px;">
+          <div style="font-size:48px; font-weight:800; background:linear-gradient(90deg,{{ '#34d399' if pct <= 80 else '#f87171' }},{{ '#38bdf8' if pct <= 80 else '#fbbf24' }});-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{{ "%.0f"|format(pct) }}%</div>
+          <div style="font-size:13px; color:var(--muted);">of budget used</div>
+        </div>
+        <div class="budget-bar-wrap">
+          <div class="budget-bar" style="height:12px;">
+            <div class="budget-bar-fill" style="width:{{ pct if pct <= 100 else 100 }}%; background:linear-gradient(90deg,{{ '#34d399' if pct <= 80 else '#f87171' }},{{ '#38bdf8' if pct <= 80 else '#fbbf24' }});"></div>
+          </div>
+        </div>
+        {% if pct > 80 %}
+        <div style="margin-top:12px; padding:10px; background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); border-radius:10px; font-size:13px; color:#fca5a5;">⚠️ You've used over 80% of your budget!</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- EXPENSE TABLE -->
+    <div class="budget-card" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;">
+      <h3 style="font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Detailed Expense Breakdown</h3>
+      <table class="expense-table">
+        <thead>
+          <tr><th>Activity</th><th>City</th><th>Time</th><th style="text-align:right;">Expense</th></tr>
+        </thead>
+        <tbody>
+          {% for stop in trip.stops %}
+          {% for act in stop.activities %}
+          <tr>
+            <td>{{ act.name }}</td>
+            <td><span class="day-label">{{ stop.city_name }}</span></td>
+            <td>{{ act.time_of_day }}</td>
+            <td>₹{{ "{:,}".format(act.cost) }}</td>
+          </tr>
+          {% endfor %}
+          {% endfor %}
+          <tr>
+            <td colspan="3" style="font-weight:700;color:#fff;border-radius:12px 0 0 12px;">Total Estimated Cost</td>
+            <td style="font-size:16px;font-weight:800;color:#34d399;border-radius:0 12px 12px 0;">₹{{ "{:,}".format(ns.total_cost) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ITINERARY TIMELINE -->
+  <div style="font-size:24px;font-weight:700;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:10px;">🗓️ Day-wise Itinerary</div>
+  <div class="timeline">
+    {% for stop in trip.stops %}
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="stop-card">
+        <div class="stop-header">
+          <div class="stop-city">📍 {{ stop.city_name }}</div>
+          <div class="stop-dates">{{ stop.arrival_date }} – {{ stop.departure_date }}</div>
+        </div>
+        <div class="activities">
+          {% for act in stop.activities %}
+          <div class="activity">
+            <div class="act-time">{{ act.time_of_day }}</div>
+            <div class="act-name">{{ act.name }}</div>
+            {% if act.cost > 0 %}
+            <div class="act-cost">₹{{ "{:,}".format(act.cost) }}</div>
+            {% endif %}
+          </div>
+          {% else %}
+          <div style="font-size:14px; color:var(--muted); font-style:italic;">No activities scheduled.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div style="font-size:48px; margin-bottom:16px;">🗺️</div>
+    <h3 style="color:#fff; font-size:20px; margin-bottom:8px;">No itinerary details yet</h3>
+    <p style="color:var(--muted); margin-bottom:24px;">The creator is still working on the stops and activities for this trip.</p>
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>

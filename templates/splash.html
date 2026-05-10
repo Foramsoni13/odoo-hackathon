@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Traveloop</title>
+
+    <!-- Auto redirect after 5 seconds -->
+    <meta http-equiv="refresh" content="5;url=/login">
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial;
+        }
+
+        body{
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            overflow:hidden;
+            position:relative;
+        }
+
+        /* Background slider (same as login) */
+        .bg-slider{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            z-index:-2;
+        }
+
+        .bg-slider img{
+            position:absolute;
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            opacity:0;
+            animation:slide 15s infinite;
+        }
+
+        .bg-slider img:nth-child(1){ animation-delay:0s; }
+        .bg-slider img:nth-child(2){ animation-delay:5s; }
+        .bg-slider img:nth-child(3){ animation-delay:10s; }
+
+        @keyframes slide{
+            0%{opacity:0;}
+            10%{opacity:1;}
+            30%{opacity:1;}
+            40%{opacity:0;}
+            100%{opacity:0;}
+        }
+
+        /* Overlay */
+        .overlay{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.45);
+            z-index:-1;
+        }
+
+        /* Center content */
+        .content{
+            text-align:center;
+            color:white;
+        }
+
+        .logo-img{
+            width:70px;
+            height:70px;
+            border:2px solid white;
+            border-radius:50%;
+            margin:0 auto 15px;
+            overflow:hidden;
+            animation:fadeIn 2s ease-in-out;
+        }
+
+        .logo-img img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        .logo{
+            font-size:55px;
+            font-weight:bold;
+            letter-spacing:2px;
+            animation:fadeIn 2s ease-in-out;
+        }
+
+        .tagline{
+            margin-top:10px;
+            font-size:14px;
+            opacity:0.8;
+        }
+
+        /* Loading animation */
+        .loader{
+            margin:20px auto 0;
+            width:40px;
+            height:40px;
+            border:4px solid rgba(255,255,255,0.3);
+            border-top:4px solid white;
+            border-radius:50%;
+            animation:spin 1s linear infinite;
+        }
+
+        @keyframes spin{
+            0%{transform:rotate(0deg);}
+            100%{transform:rotate(360deg);}
+        }
+
+        @keyframes fadeIn{
+            from{opacity:0; transform:translateY(20px);}
+            to{opacity:1; transform:translateY(0);}
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- Background -->
+<div class="bg-slider">
+    <img src="{{ url_for('static', filename='images/travel1.jpg') }}">
+    <img src="{{ url_for('static', filename='images/travel2.jpg') }}">
+    <img src="{{ url_for('static', filename='images/travel3.jpg') }}">
+</div>
+
+<div class="overlay"></div>
+
+<!-- Splash Content -->
+<div class="content">
+    <div class="logo-img">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}">
+    </div>
+    <div class="logo">Traveloop</div>
+    <div class="tagline">Explore. Travel. Experience.</div>
+
+    <!-- Loader animation -->
+    <div class="loader"></div>
+</div>
+
+</body>
+</html>

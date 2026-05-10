@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TraveLoop — Itinerary Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080812;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.1);--text:#f8fafc;--muted:#94a3b8;--accent1:#38bdf8;--accent2:#8b5cf6;--accent3:#f472b6;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background-color:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right,rgba(56,189,248,0.1),transparent 40%),radial-gradient(circle at bottom left,rgba(139,92,246,0.15),transparent 50%);z-index:-1;pointer-events:none;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:rgba(0,0,0,0.4);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
+.nav-logo{font-size:24px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo span{color:var(--accent1);}
+.nav-links{display:flex;align-items:center;gap:30px;}
+.nav-link{color:var(--muted);text-decoration:none;font-weight:500;font-size:15px;transition:.2s;}
+.nav-link:hover, .nav-link.active{color:#fff;}
+.nav-right{display:flex;align-items:center;gap:20px;}
+.avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--accent1),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;cursor:pointer;}
+.logout-btn{padding:8px 18px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;text-decoration:none;}
+
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:40px;}
+.header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.title{font-size:32px;font-weight:800;color:#fff;margin-bottom:6px;}
+.subtitle{color:var(--muted);font-size:15px;display:flex;align-items:center;gap:8px;}
+.budget-badge{background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#c4b5fd;padding:6px 14px;border-radius:99px;font-weight:600;font-size:14px;}
+
+.grid-layout{display:grid;grid-template-columns:300px 1fr;gap:40px;}
+
+/* ADD FORM SIDEBAR */
+.form-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;}
+.panel-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:20px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:rgba(255,255,255,0.7);}
+.form-control{width:100%;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;padding:12px;color:#fff;font-family:'Outfit',sans-serif;font-size:14px;outline:none;}
+.form-control:focus{border-color:var(--accent1);}
+.btn-submit{width:100%;background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;border-radius:10px;padding:12px;color:#fff;font-weight:700;cursor:pointer;margin-top:10px;}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:30px;}
+.stop-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;position:relative;}
+.stop-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.stop-title{font-size:22px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;}
+.stop-dates{font-size:14px;color:var(--muted);background:rgba(0,0,0,0.4);padding:4px 12px;border-radius:8px;}
+
+/* ACTIVITIES */
+.act-list{display:flex;flex-direction:column;gap:12px;}
+.act-item{display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05);padding:14px 18px;border-radius:12px;}
+.act-info{display:flex;align-items:center;gap:12px;}
+.act-time{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--accent1);width:80px;}
+.act-name{font-size:15px;color:#fff;font-weight:500;}
+.act-cost{font-size:14px;font-weight:600;color:#6ee7b7;}
+
+/* ADD ACTIVITY INLINE FORM */
+.add-act-form{margin-top:16px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px dashed var(--border);}
+.add-act-form input, .add-act-form select{background:rgba(0,0,0,0.3);border:1px solid var(--border);color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;outline:none;}
+.add-act-form button{background:rgba(255,255,255,0.1);border:none;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+.add-act-form button:hover{background:var(--accent2);}
+
+.empty-state{text-align:center;padding:40px;color:var(--muted);}
+</style>
+</head>
+<body>
+<nav>
+  <div style="display:flex; align-items:center; gap: 40px;">
+    <a href="/home" class="nav-logo"><span>✈️</span> TraveLoop</a>
+    <div class="nav-links">
+      <a href="/home" class="nav-link">Dashboard</a>
+      <a href="/my-trips" class="nav-link active">My Trips</a>
+      <a href="/plan-trip" class="nav-link">Plan a Trip</a>
+      <a href="/search" class="nav-link">Search</a>
+      <a href="/community" class="nav-link">Community</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a href="/profile" class="avatar" style="text-decoration:none;color:#fff;">{{ user[0]|upper if user else 'U' }}</a>
+    <span style="font-size:16px; font-weight: 600; color: #fff; background: linear-gradient(90deg, #c4b5fd, #f9a8d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user }}</span>
+    <a href="/logout" class="logout-btn">Sign out</a>
+  </div>
+</nav>
+
+<div class="page">
+  <a href="/my-trips" style="color:var(--muted); text-decoration:none; font-size:14px; margin-bottom:20px; display:inline-block;">&larr; Back to My Trips</a>
+  
+  <div class="header">
+    <div>
+      <h1 class="title">{{ trip.name }}</h1>
+      <div class="subtitle"><span>📅 {{ trip.date_range }}</span> • <span>👥 {{ trip.people_avatars.split(',')|length }} Travelers</span></div>
+    </div>
+    <div class="budget-badge">Total Budget: ₹{{ "{:,}".format(trip.budget) }}</div>
+  </div>
+
+  <div class="grid-layout">
+    <!-- SIDEBAR: Add Stop -->
+    <div>
+      <div class="form-panel" style="position:sticky; top:100px;">
+        <div class="panel-title">📍 Add a Destination Stop</div>
+        <form action="/add-stop/{{ trip.id }}" method="POST">
+          <div class="form-group">
+            <label>City Name</label>
+            <input type="text" name="city_name" class="form-control" placeholder="E.g. Kyoto" required>
+          </div>
+          <div class="form-group">
+            <label>Arrival Date</label>
+            <input type="date" name="arrival_date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Departure Date</label>
+            <input type="date" name="departure_date" class="form-control" required>
+          </div>
+          <button type="submit" class="btn-submit">+ Add Stop to Itinerary</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MAIN: Timeline -->
+    <div class="timeline">
+      {% for stop in trip.stops %}
+      <div class="stop-card">
+        <div class="stop-header">
+          <div class="stop-title">📍 {{ stop.city_name }}</div>
+          <div class="stop-dates">{{ stop.arrival_date }} – {{ stop.departure_date }}</div>
+        </div>
+        
+        <div class="act-list">
+          {% for act in stop.activities %}
+          <div class="act-item">
+            <div class="act-info">
+              <div class="act-time">{{ act.time_of_day }}</div>
+              <div class="act-name">{{ act.name }}</div>
+            </div>
+            <div class="act-cost">₹{{ "{:,}".format(act.cost) }}</div>
+          </div>
+          {% else %}
+          <div style="font-size:14px; color:var(--muted); font-style:italic; padding:10px 0;">No activities planned yet.</div>
+          {% endfor %}
+        </div>
+
+        <!-- Add Activity Form -->
+        <form class="add-act-form" action="/add-activity/{{ stop.id }}" method="POST">
+          <select name="time_of_day" required>
+            <option value="Morning">Morning</option>
+            <option value="Afternoon">Afternoon</option>
+            <option value="Evening">Evening</option>
+            <option value="Night">Night</option>
+          </select>
+          <input type="text" name="name" placeholder="What to do? E.g., Visit Fushimi Inari" style="flex:1;" required>
+          <input type="number" name="cost" placeholder="Cost (₹)" style="width:100px;">
+          <button type="submit">+ Add</button>
+        </form>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div style="font-size:40px; margin-bottom:16px;">🗺️</div>
+        <h3 style="color:#fff; margin-bottom:8px;">Your itinerary is empty</h3>
+        <p>Use the panel on the left to add your first destination stop.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+</body>
+</html>

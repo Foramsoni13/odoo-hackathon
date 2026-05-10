@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Glass Login Screen</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial,sans-serif;
+        }
+
+        body{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+            padding:10px;
+            overflow:hidden;
+            position:relative;
+        }
+
+        /* Background Slider */
+        .bg-slider{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            z-index:-2;
+        }
+
+        .bg-slider img{
+            position:absolute;
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            opacity:0;
+            animation:slideShow 15s infinite;
+        }
+
+        .bg-slider img:nth-child(1){ animation-delay:0s; }
+        .bg-slider img:nth-child(2){ animation-delay:5s; }
+        .bg-slider img:nth-child(3){ animation-delay:10s; }
+
+        @keyframes slideShow{
+            0%{opacity:0;}
+            10%{opacity:1;}
+            30%{opacity:1;}
+            40%{opacity:0;}
+            100%{opacity:0;}
+        }
+
+        /* Overlay */
+        .overlay{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.35);
+            z-index:-1;
+        }
+
+        /* Main Box */
+        .main-box{
+            width:350px;
+            padding:20px;
+            background:rgba(255,255,255,0.16);
+            border:1px solid rgba(255,255,255,0.25);
+            border-radius:20px;
+            backdrop-filter:blur(16px);
+            -webkit-backdrop-filter:blur(16px);
+            box-shadow:0 6px 25px rgba(0,0,0,0.25);
+        }
+
+        /* Logo */
+        .photo-box{
+            width:60px;
+            height:60px;
+            border:2px solid white;
+            border-radius:50%;
+            margin:0 auto 15px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            overflow:hidden;
+        }
+
+        .photo-box img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        /* Form */
+        .form-container{
+            background:rgba(255,255,255,0.10);
+            border:1px solid rgba(255,255,255,0.20);
+            border-radius:14px;
+            padding:15px;
+        }
+
+        .input-box{
+            position:relative;
+            margin-bottom:10px;
+        }
+
+        input{
+            width:100%;
+            background:rgba(255,255,255,0.20);
+            border:1px solid rgba(255,255,255,0.30);
+            border-radius:9px;
+            padding:10px 35px 10px 12px;
+            color:white;
+            font-size:13px;
+            outline:none;
+        }
+
+        input::placeholder{
+            color:#f1f1f1;
+        }
+
+        input:focus{
+            border-color:white;
+            background:rgba(255,255,255,0.28);
+        }
+
+        .toggle-password{
+            position:absolute;
+            right:12px;
+            top:12px;
+            cursor:pointer;
+            color:white;
+            font-size:12px;
+        }
+
+        /* Button */
+        button{
+            width:100%;
+            background:#875A7B;
+            color:white;
+            border:none;
+            padding:12px;
+            border-radius:9px;
+            cursor:pointer;
+            font-size:14px;
+            font-weight:bold;
+            margin-top:15px;
+            transition:0.3s;
+        }
+
+        button:hover{
+            transform:scale(1.02);
+            background:#6a4461;
+        }
+
+        /* Links */
+        .links-container{
+            text-align:center;
+            margin-top:15px;
+            font-size:12px;
+            color:white;
+        }
+
+        .links-container a{
+            color:white;
+            text-decoration:none;
+            font-weight:bold;
+        }
+
+        .links-container a:hover{
+            text-decoration:underline;
+        }
+
+        /* Error */
+        .error{
+            color:#ffd6d6;
+            font-size:10px;
+            height:12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="bg-slider">
+        <img src="{{ url_for('static', filename='images/travel1.jpg') }}">
+        <img src="{{ url_for('static', filename='images/travel2.jpg') }}">
+        <img src="{{ url_for('static', filename='images/travel3.jpg') }}">
+    </div>
+
+    <div class="overlay"></div>
+
+    <!-- Login Box -->
+    <div class="main-box">
+
+        <!-- Logo -->
+        <div class="photo-box">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}">
+        </div>
+
+        <h3 style="text-align:center; color:white; margin-bottom:15px;">Login</h3>
+
+        <form method="POST" onsubmit="return validateLogin()">
+
+            <div class="form-container">
+
+                <!-- Email -->
+                <div class="input-box">
+                    <input type="email" id="email" name="email" placeholder="Email">
+                    <div id="emailError" class="error"></div>
+                </div>
+
+                <!-- Password -->
+                <div class="input-box">
+                    <input type="password" id="password" name="password" placeholder="Password">
+                    <i class="fa-solid fa-eye toggle-password" onclick="togglePassword()"></i>
+                    <div id="passError" class="error"></div>
+                </div>
+
+                <!-- Forgot Password -->
+                <div style="text-align:right;">
+                    <a href="/forgot-password" style="color:white; font-size:11px;">
+                        Forgot Password?
+                    </a>
+                </div>
+
+            </div>
+
+            <button type="submit">Login</button>
+
+        </form>
+
+        <div class="links-container">
+            Don't have an account?
+            <a href="/register">Register</a>
+        </div>
+
+    </div>
+
+<script>
+function validateLogin(){
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value;
+
+    document.getElementById("emailError").textContent = "";
+    document.getElementById("passError").textContent = "";
+
+    let valid = true;
+
+    let pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+
+    if(!email.match(pattern)){
+        document.getElementById("emailError").textContent = "Enter valid email";
+        valid = false;
+    }
+
+    if(password.length < 6){
+        document.getElementById("passError").textContent = "Min 6 characters required";
+        valid = false;
+    }
+
+    return valid;
+}
+
+function togglePassword(){
+    let field = document.getElementById("password");
+    let icon = document.querySelector(".toggle-password");
+
+    if(field.type === "password"){
+        field.type = "text";
+        icon.classList.replace("fa-eye","fa-eye-slash");
+    }else{
+        field.type = "password";
+        icon.classList.replace("fa-eye-slash","fa-eye");
+    }
+}
+</script>
+
+</body>
+</html>

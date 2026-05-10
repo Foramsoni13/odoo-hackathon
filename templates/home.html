@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TraveLoop — Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0a0f1e;
+  --surface:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.09);
+  --accent1:#6366f1;
+  --accent2:#f472b6;
+  --accent3:#34d399;
+  --gold:#f59e0b;
+  --text:rgba(255,255,255,0.85);
+  --muted:rgba(255,255,255,0.4);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;}
+.orb1{width:700px;height:700px;background:#4f46e5;opacity:.15;top:-300px;left:-200px;}
+.orb2{width:500px;height:500px;background:#db2777;opacity:.12;bottom:-200px;right:-150px;}
+.orb3{width:400px;height:400px;background:#0891b2;opacity:.1;top:40%;left:50%;}
+
+/* NAV */
+/* NAV LINKS */
+.nav-links{display:flex;align-items:center;gap:30px;}
+.nav-link{color:var(--muted);text-decoration:none;font-weight:500;font-size:15px;transition:.2s;}
+.nav-link:hover, .nav-link.active{color:#fff;}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(10,15,30,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;background:linear-gradient(135deg,#818cf8,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo span{font-size:22px;}
+.nav-search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 16px;width:280px;}
+.nav-search input{background:none;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;width:100%;}
+.nav-search input::placeholder{color:var(--muted);}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.notif-wrapper{position:relative;}
+.notif-btn{width:38px;height:38px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:.2s;position:relative;}
+.notif-btn:hover{background:rgba(255,255,255,0.1);}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--bg);}
+.notif-panel{position:absolute;top:120%;right:0;width:300px;background:rgba(10,15,30,0.95);border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,0.5);backdrop-filter:blur(20px);opacity:0;visibility:hidden;transform:translateY(-10px);transition:.3s;z-index:200;}
+.notif-panel.show{opacity:1;visibility:visible;transform:translateY(0);}
+.notif-header{padding:14px 18px;border-bottom:1px solid var(--border);font-size:14px;font-weight:700;color:#fff;}
+.notif-body{max-height:300px;overflow-y:auto;}
+.notif-item{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.05);transition:.2s;cursor:pointer;}
+.notif-item:hover{background:rgba(255,255,255,0.05);}
+.notif-icon{width:36px;height:36px;background:var(--surface);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.notif-text{font-size:13px;color:var(--muted);line-height:1.4;}
+.notif-text strong{color:#fff;font-weight:600;}
+.avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--accent1),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;cursor:pointer;}
+.logout-btn{padding:8px 18px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:10px;color:#fca5a5;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;text-decoration:none;transition:.2s;}
+.logout-btn:hover{background:rgba(239,68,68,.2);}
+
+
+/* CONTROL BAR */
+.control-bar{display:flex;align-items:center;gap:12px;margin-bottom:40px;}
+.ctrl-search{flex:1;position:relative;background:var(--surface);border:1px solid var(--border);border-radius:14px;display:flex;align-items:center;padding:0 16px;height:48px;}
+.ctrl-search input{background:none;border:none;color:#fff;font-size:15px;width:100%;outline:none;margin-left:10px;font-family:'Outfit',sans-serif;}
+.ctrl-search input::placeholder{color:var(--muted);}
+.ctrl-btn{height:48px;padding:0 20px;background:var(--surface);border:1px solid var(--border);border-radius:14px;color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;appearance:none;-webkit-appearance:none;padding-right:30px;}
+.ctrl-btn:hover{background:rgba(255,255,255,0.08);}
+.ctrl-btn option{background:#0a0f1e;color:#ffffff;}
+
+/* FLOATING BTN */
+.floating-btn{position:fixed;bottom:30px;right:30px;background:linear-gradient(135deg,#db2777,#7c3aed);border:none;border-radius:99px;padding:16px 28px;color:#fff;font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;box-shadow:0 10px 25px rgba(219,39,119,0.4);cursor:pointer;text-decoration:none;z-index:100;transition:.3s;display:flex;align-items:center;gap:8px;}
+.floating-btn:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(219,39,119,0.5);}
+
+/* LAYOUT */
+.page{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:36px 40px 60px;}
+
+/* HERO */
+.hero{border-radius:28px;overflow:hidden;position:relative;min-height:360px;display:flex;margin-bottom:40px;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#7c3aed 70%,#db2777 100%);}
+.hero-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.25);}
+.hero-img-decor{position:absolute;right:0;bottom:0;width:55%;height:100%;background:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&q=80') center/cover no-repeat;opacity:.35;mask-image:linear-gradient(to left,rgba(0,0,0,1) 0%,rgba(0,0,0,0) 100%);}
+.hero-content{position:relative;z-index:2;padding:44px 48px;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:30px;}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:6px 14px;border-radius:99px;font-size:13px;font-weight:500;color:rgba(255,255,255,.9);width:fit-content;margin-bottom:12px;}
+.hero-title{font-size:36px;font-weight:800;color:#fff;line-height:1.15;}
+.hero-title span{background:linear-gradient(90deg,#c4b5fd,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{color:rgba(255,255,255,.6);font-size:15px;margin-top:10px;max-width:420px;}
+.hero-actions{display:flex;gap:12px;margin-top:20px;}
+.btn-plan{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:14px;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:.3s;text-decoration:none;}
+.btn-plan:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(99,102,241,.45);}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:14px;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:.3s;text-decoration:none;backdrop-filter:blur(8px);}
+.btn-outline:hover{background:rgba(255,255,255,.18);}
+.hero-stats{display:flex;gap:32px;}
+.hstat{text-align:center;}
+.hstat-val{font-size:22px;font-weight:800;color:#fff;}
+.hstat-lbl{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px;}
+
+/* SECTION HEADER */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.sec-title{font-size:20px;font-weight:700;color:#fff;}
+.sec-link{color:var(--accent1);font-size:14px;font-weight:500;text-decoration:none;transition:.2s;}
+.sec-link:hover{color:#a5b4fc;}
+
+/* UPCOMING TRIPS */
+.trips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:44px;}
+.trip-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:.3s;cursor:pointer;}
+.trip-card:hover{transform:translateY(-5px);border-color:rgba(99,102,241,.4);box-shadow:0 20px 50px rgba(0,0,0,.35);}
+.trip-img{height:140px;position:relative;overflow:hidden;}
+.trip-img img{width:100%;height:100%;object-fit:cover;transition:.4s;}
+.trip-card:hover .trip-img img{transform:scale(1.06);}
+.trip-badge{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;}
+.badge-upcoming{background:rgba(99,102,241,.85);color:#fff;}
+.badge-ongoing{background:rgba(52,211,153,.85);color:#fff;}
+.badge-planned{background:rgba(245,158,11,.85);color:#fff;}
+.trip-body{padding:16px;}
+.trip-city{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
+.trip-dates{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+.trip-meta{display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
+.trip-people{display:flex;align-items:center;}
+.trip-people .av{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg);margin-left:-6px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.trip-people .av:first-child{margin-left:0;}
+.trip-budget{font-size:13px;font-weight:600;color:var(--accent3);}
+
+/* QUICK ACTIONS */
+.quick-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:44px;}
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:.3s;text-decoration:none;}
+.qcard:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.18);}
+.qicon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.qcard span{font-size:13px;font-weight:500;color:var(--text);text-align:center;}
+
+/* DESTINATIONS */
+.dest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:44px;}
+.dest-card{border-radius:20px;overflow:hidden;position:relative;height:220px;cursor:pointer;transition:.3s;}
+.dest-card:hover{transform:scale(1.03);}
+.dest-card img{width:100%;height:100%;object-fit:cover;transition:.4s;}
+.dest-card:hover img{transform:scale(1.08);}
+.dest-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,0) 55%);}
+.dest-info{position:absolute;bottom:0;left:0;right:0;padding:18px 16px;}
+.dest-city{font-size:17px;font-weight:700;color:#fff;}
+.dest-country{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px;}
+.dest-price{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);padding:5px 10px;border-radius:10px;font-size:12px;font-weight:600;color:#fff;}
+.dest-tag{display:inline-block;background:rgba(99,102,241,.7);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:600;color:#fff;margin-top:6px;}
+
+/* BUDGET */
+.budget-section{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;margin-bottom:44px;}
+.budget-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:28px;}
+.budget-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;}
+.budget-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.budget-total{font-size:38px;font-weight:800;color:#fff;margin-bottom:4px;}
+.budget-total span{font-size:20px;color:var(--muted);font-weight:400;}
+.budget-bar-wrap{margin:20px 0 8px;}
+.budget-bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px;}
+.budget-bar{height:8px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-bottom:14px;}
+.budget-bar-fill{height:100%;border-radius:99px;}
+.budget-items{display:flex;flex-direction:column;gap:12px;}
+.bitem{display:flex;align-items:center;gap:12px;}
+.bitem-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.bitem-label{font-size:13px;color:var(--text);flex:1;}
+.bitem-val{font-size:13px;font-weight:600;color:#fff;}
+.bitem-pct{font-size:12px;color:var(--muted);width:32px;text-align:right;}
+
+.tips-card{background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(244,114,182,.1));border:1px solid rgba(99,102,241,.25);border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px;}
+.tip-item{display:flex;align-items:flex-start;gap:14px;padding:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;transition:.2s;cursor:pointer;}
+.tip-item:hover{background:rgba(255,255,255,.08);}
+.tip-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.tip-text h4{font-size:14px;font-weight:600;color:#fff;margin-bottom:3px;}
+.tip-text p{font-size:12px;color:var(--muted);line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex; align-items:center; gap: 40px;">
+    <a href="/home" class="nav-logo"><span>✈️</span> TraveLoop</a>
+    <div class="nav-links">
+      <a href="/home" class="nav-link active">Dashboard</a>
+      <a href="/my-trips" class="nav-link">My Trips</a>
+      <a href="/plan-trip" class="nav-link">Plan a Trip</a>
+      <a href="/search" class="nav-link">Search</a>
+      <a href="/community" class="nav-link">Community</a>
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <div class="notif-wrapper">
+      <div class="notif-btn" id="notifBtn">🔔{% if notifications|length > 0 %}<span class="notif-badge">{{ notifications|length }}</span>{% endif %}</div>
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-header">Notifications ({{ notifications|length }})</div>
+        <div class="notif-body">
+          {% for notif in notifications %}
+          <div class="notif-item">
+            <div class="notif-icon">{{ notif.icon }}</div>
+            <div class="notif-text"><strong>{{ notif.title }}</strong><br>{{ notif.message }}</div>
+          </div>
+          {% else %}
+          <div style="padding: 14px 18px; color: var(--muted); font-size: 13px;">No new notifications.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <a href="/profile" class="avatar" style="text-decoration:none;color:#fff;">{{ user[0].upper() if user else 'U' }}</a>
+    <span style="font-size:16px; font-weight: 600; color: #fff; background: linear-gradient(90deg, #c4b5fd, #f9a8d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ user }}</span>
+    <a href="/logout" class="logout-btn">Sign out</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO BANNER -->
+  <div class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-img-decor"></div>
+    <div class="hero-content">
+      <div>
+        <div class="hero-tag">🌍 Welcome back, {{ user }}!</div>
+        <div class="hero-title">Your next adventure<br>awaits, <span>{{ user }}</span> ✨</div>
+        <div class="hero-sub">You have {{ trips|length }} previous trips and top regional selections ready to explore.</div>
+        <div class="hero-actions">
+          <a href="/plan-trip" class="btn-plan">✈️ Plan New Trip</a>
+          <a href="#" class="btn-outline">🗺️ Explore Map</a>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-val">{{ trips|length }}</div><div class="hstat-lbl">Trips Taken</div></div>
+        <div class="hstat"><div class="hstat-val">12</div><div class="hstat-lbl">Cities Visited</div></div>
+        <div class="hstat"><div class="hstat-val">₹3.5L</div><div class="hstat-lbl">Total Spent</div></div>
+      </div>
+    </div>
+  </div>
+
+    <!-- CONTROL BAR -->
+  <div class="control-bar">
+    <div class="ctrl-search">
+      <span>🔍</span>
+      <input type="text" placeholder="Search destinations, trips..." id="searchBox">
+    </div>
+        <select class="ctrl-btn" id="groupBy">
+      <option value="">Group by</option>
+      <option value="upcoming">Status: Upcoming</option>
+      <option value="planned">Status: Planned</option>
+      <option value="ongoing">Status: Ongoing</option>
+    </select>
+    <select class="ctrl-btn" id="filterBy">
+      <option value="">Filter Category</option>
+      <option value="all">All</option>
+      <option value="romantic">Romantic</option>
+      <option value="scenic">Scenic</option>
+      <option value="luxury">Luxury</option>
+      <option value="adventure">Adventure</option>
+    </select>
+    <select class="ctrl-btn" id="sortBy">
+      <option value="">Sort by...</option>
+      <option value="price_asc">Price: Low to High</option>
+      <option value="price_desc">Price: High to Low</option>
+    </select>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="sec-header"><div class="sec-title">Quick Actions</div></div>
+  <div class="quick-row">
+    <a href="#" class="qcard">
+      <div class="qicon" style="background:rgba(99,102,241,.2);">🗓️</div>
+      <span>Plan a Trip</span>
+    </a>
+    <a href="#" class="qcard">
+      <div class="qicon" style="background:rgba(52,211,153,.2);">🏨</div>
+      <span>Book Hotel</span>
+    </a>
+    <a href="#" class="qcard">
+      <div class="qicon" style="background:rgba(251,191,36,.2);">💰</div>
+      <span>Set Budget</span>
+    </a>
+    <a href="#" class="qcard">
+      <div class="qicon" style="background:rgba(244,114,182,.2);">📋</div>
+      <span>Itinerary</span>
+    </a>
+  </div>
+
+  <!-- UPCOMING TRIPS -->
+  <div class="sec-header">
+    <div class="sec-title">🧳 Previous Trips</div>
+    <a href="#" class="sec-link">View all →</a>
+  </div>
+  <div class="trips-grid">
+    {% for trip in trips %}
+    <a href="/view-trip/{{ trip.id }}" style="text-decoration:none;">
+      <div class="trip-card" data-name="{{ trip.name }}" data-price="{{ trip.budget }}" data-status="{{ trip.status }}" data-type="trip">
+        <div class="trip-img">
+          <img src="{{ trip.image_url }}" alt="{{ trip.name }}">
+          <span class="trip-badge badge-{{ trip.status }}">{{ trip.status.title() }}</span>
+        </div>
+        <div class="trip-body">
+          <div class="trip-city">✈️ {{ trip.name }}</div>
+          <div class="trip-dates">📅 {{ trip.date_range }}</div>
+          <div class="trip-meta">
+            <div class="trip-people">
+              {% for av_color in trip.people_avatars.split(',') %}
+              <div class="av" style="background:{{ av_color }};"></div>
+              {% endfor %}
+            </div>
+            <div class="trip-budget">₹{{ "{:,}".format(trip.budget) }}</div>
+          </div>
+        </div>
+      </div>
+    </a>
+    {% else %}
+    <div style="grid-column: 1 / -1; padding: 40px; text-align: center; background: var(--surface); border: 1px dashed var(--border); border-radius: 20px; color: var(--muted);">
+      No trips planned yet. <a href="/plan-trip" style="color: var(--accent1);">Plan your first trip!</a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- RECOMMENDED DESTINATIONS -->
+  <div class="sec-header">
+    <div class="sec-title">Top Regional Selections</div>
+    <a href="#" class="sec-link">Explore all →</a>
+  </div>
+  <div class="dest-grid">
+    {% for dest in destinations %}
+    <div class="dest-card" data-name="{{ dest.name }} {{ dest.country }}" data-price="{{ dest.price }}" data-cat="{{ dest.category }}" data-type="dest">
+      <img src="{{ dest.image_url }}" alt="{{ dest.name }}">
+      <div class="dest-overlay"></div>
+      <div class="dest-price">from ₹{{ "{:,}".format(dest.price) }}</div>
+      <div class="dest-info">
+        <div class="dest-city">{{ dest.name }}</div>
+        <div class="dest-country">{{ dest.country }}</div>
+        <span class="dest-tag">{{ dest.category.title() }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- BUDGET + TIPS -->
+  <div class="sec-header"><div class="sec-title">💰 Budget Overview</div></div>
+  <div class="budget-section">
+    <div class="budget-card">
+      <div class="budget-title">Total Budget — Bali Trip</div>
+      <div class="budget-sub">Jun 15 – Jun 22 · 4 people</div>
+      <div class="budget-total">₹95,000 <span>/ ₹1,20,000</span></div>
+      <div class="budget-bar-wrap">
+        <div class="budget-bar-label"><span>Spent</span><span>80%</span></div>
+        <div class="budget-bar"><div class="budget-bar-fill" style="width:80%;background:linear-gradient(90deg,#6366f1,#f472b6);"></div></div>
+        <div class="budget-bar-label"><span>Flights</span><span>45%</span></div>
+        <div class="budget-bar"><div class="budget-bar-fill" style="width:45%;background:#6366f1;"></div></div>
+        <div class="budget-bar-label"><span>Hotels</span><span>30%</span></div>
+        <div class="budget-bar"><div class="budget-bar-fill" style="width:30%;background:#34d399;"></div></div>
+        <div class="budget-bar-label"><span>Food & Activities</span><span>25%</span></div>
+        <div class="budget-bar"><div class="budget-bar-fill" style="width:25%;background:#f59e0b;"></div></div>
+      </div>
+      <div class="budget-items">
+        <div class="bitem"><div class="bitem-dot" style="background:#6366f1;"></div><div class="bitem-label">Flights</div><div class="bitem-val">₹42,000</div><div class="bitem-pct">45%</div></div>
+        <div class="bitem"><div class="bitem-dot" style="background:#34d399;"></div><div class="bitem-label">Hotels</div><div class="bitem-val">₹28,500</div><div class="bitem-pct">30%</div></div>
+        <div class="bitem"><div class="bitem-dot" style="background:#f59e0b;"></div><div class="bitem-label">Food & Activities</div><div class="bitem-val">₹24,500</div><div class="bitem-pct">25%</div></div>
+      </div>
+    </div>
+    <div class="tips-card">
+      <div class="sec-title" style="font-size:16px;">💡 Travel Tips</div>
+      <div class="tip-item">
+        <div class="tip-icon" style="background:rgba(99,102,241,.2);">🎫</div>
+        <div class="tip-text"><h4>Book Early & Save</h4><p>Booking 60+ days ahead saves up to 40% on flights.</p></div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon" style="background:rgba(52,211,153,.2);">🌤️</div>
+        <div class="tip-text"><h4>Best Season for Bali</h4><p>April–October is dry season — perfect for your trip!</p></div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-icon" style="background:rgba(245,158,11,.2);">💳</div>
+        <div class="tip-text"><h4>Currency Tips</h4><p>Use local ATMs for better exchange rates in Bali.</p></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+  <a href="/plan-trip" class="floating-btn">+ Plan a trip</a>
+
+<!-- FILTER AND SORT LOGIC -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchBox = document.getElementById("searchBox");
+    const groupBy = document.getElementById("groupBy");
+    const filterBy = document.getElementById("filterBy");
+    const sortBy = document.getElementById("sortBy");
+
+
+    // Notification Toggle
+    const notifBtn = document.getElementById("notifBtn");
+    const notifPanel = document.getElementById("notifPanel");
+    notifBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        notifPanel.classList.toggle("show");
+    });
+    document.addEventListener("click", function(e) {
+        if (!notifPanel.contains(e.target) && e.target !== notifBtn) {
+            notifPanel.classList.remove("show");
+        }
+    });
+
+    function applyFilters() {
+        const query = searchBox.value.toLowerCase();
+        const group = groupBy.value;
+        const filter = filterBy.value;
+        
+        // Destinations
+        const destGrid = document.querySelector(".dest-grid");
+        let destCards = Array.from(destGrid.querySelectorAll(".dest-card"));
+        
+        destCards.forEach(card => {
+            const name = card.getAttribute("data-name").toLowerCase();
+            const cat = card.getAttribute("data-cat");
+            
+            let show = name.includes(query);
+            if (filter && filter !== "all" && cat !== filter) show = false;
+            if (group) show = false; // "Group by" status only applies to trips, hide destinations if grouping by status
+            
+            card.style.display = show ? "" : "none";
+        });
+        
+        // Trips
+        const tripsGrid = document.querySelector(".trips-grid");
+        let tripCards = Array.from(tripsGrid.querySelectorAll(".trip-card"));
+        
+        tripCards.forEach(card => {
+            const name = card.getAttribute("data-name").toLowerCase();
+            const status = card.getAttribute("data-status");
+            
+            let show = name.includes(query);
+            if (group && status !== group) show = false;
+            if (filter && filter !== "all") show = false; // Filter category only applies to destinations
+            
+            card.style.display = show ? "" : "none";
+        });
+        
+        // Sorting
+        const sortVal = sortBy.value;
+        if (sortVal) {
+            // Sort Destinations
+            destCards.sort((a, b) => {
+                let pa = parseInt(a.getAttribute("data-price"));
+                let pb = parseInt(b.getAttribute("data-price"));
+                return sortVal === "price_asc" ? pa - pb : pb - pa;
+            });
+            destCards.forEach(card => destGrid.appendChild(card));
+            
+            // Sort Trips
+            tripCards.sort((a, b) => {
+                let pa = parseInt(a.getAttribute("data-price"));
+                let pb = parseInt(b.getAttribute("data-price"));
+                return sortVal === "price_asc" ? pa - pb : pb - pa;
+            });
+            tripCards.forEach(card => tripsGrid.appendChild(card));
+        }
+    }
+
+    searchBox.addEventListener("input", applyFilters);
+    groupBy.addEventListener("change", applyFilters);
+    filterBy.addEventListener("change", applyFilters);
+    sortBy.addEventListener("change", applyFilters);
+});
+</script>
+</body>
+
+</html>
